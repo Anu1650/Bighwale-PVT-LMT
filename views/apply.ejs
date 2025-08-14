@@ -40,7 +40,7 @@
       <!-- Experience textarea (Optional) -->
       <div class="col-md-12">
         <label class="form-label fw-bold">Experience - Optional</label>
-        <textarea name="experience" class="form-control" rows="3" placeholder="Describe your work experience"></textarea>
+        <textarea name="experience" id="experienceField" class="form-control" rows="3" placeholder="No Experience"></textarea>
       </div>
 
       <div class="col-12 text-center">
@@ -50,19 +50,22 @@
   </div>
 </div>
 
-<!-- Animate.css for smooth entry -->
+<!-- Animate.css -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
   const form = document.getElementById('applyForm');
+  const resumeInput = document.getElementById('resumeInput');
+  const experienceField = document.getElementById('experienceField');
 
-  // Validation for Phone & WhatsApp length
   form.addEventListener('submit', function(e) {
     const phone = form.phone.value.trim();
     const whatsapp = form.whatsapp.value.trim();
+    const experienceText = experienceField.value.trim();
 
+    // Validate phone numbers length
     if (phone.length < 10 || whatsapp.length < 10) {
       e.preventDefault();
       Swal.fire({
@@ -71,26 +74,37 @@
         text: 'Phone and WhatsApp numbers must be at least 10 digits long.',
         confirmButtonColor: '#d33'
       });
+      return;
+    }
+
+    // Auto-fill "No Experience" if blank
+    if (experienceText === "") {
+      experienceField.value = "No Experience";
     }
   });
+</script>
 
-  // SweetAlert from server flash messages
+<script>
   <% if (typeof messages !== 'undefined') { %>
     <% if (messages.error && messages.error.length > 0) { %>
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: '<%= messages.error[0] %>',
-        confirmButtonColor: '#d33'
+        text: <%- JSON.stringify(messages.error[0]) %>,
+        confirmButtonColor: '#d33',
+        showClass: { popup: 'animate__animated animate__shakeX' },
+        hideClass: { popup: 'animate__animated animate__fadeOut' }
       });
     <% } %>
     <% if (messages.success && messages.success.length > 0) { %>
       Swal.fire({
         icon: 'success',
         title: 'Application Submitted!',
-        text: '<%= messages.success[0] %>',
+        text: <%- JSON.stringify(messages.success[0]) %>,
         showConfirmButton: false,
         timer: 2500,
+        showClass: { popup: 'animate__animated animate__fadeInDown' },
+        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
         didClose: () => {
           window.location.href = "/";
         }
