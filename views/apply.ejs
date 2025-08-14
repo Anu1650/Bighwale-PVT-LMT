@@ -3,36 +3,43 @@
   <div class="card shadow-lg p-4 animate__animated animate__fadeIn">
     <h2 class="text-center text-primary mb-4">Apply for a Position</h2>
     <form action="/apply" method="POST" enctype="multipart/form-data" class="row g-3" id="applyForm">
+      
       <div class="col-md-6">
         <label class="form-label fw-bold">Full Name</label>
         <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
       </div>
+
       <div class="col-md-6">
         <label class="form-label fw-bold">Email</label>
         <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
       </div>
+
       <div class="col-md-6">
         <label class="form-label fw-bold">Phone</label>
-        <input type="text" name="phone" class="form-control" placeholder="Your phone number" required>
+        <input type="tel" name="phone" class="form-control" placeholder="Your phone number" 
+               pattern="[0-9]{10,}" minlength="10" maxlength="15" required>
       </div>
+
       <div class="col-md-6">
         <label class="form-label fw-bold">WhatsApp</label>
-        <input type="text" name="whatsapp" class="form-control" placeholder="Your WhatsApp number" required>
+        <input type="tel" name="whatsapp" class="form-control" placeholder="Your WhatsApp number" 
+               pattern="[0-9]{10,}" minlength="10" maxlength="15" required>
       </div>
+
       <div class="col-md-12">
         <label class="form-label fw-bold">Education</label>
         <input type="text" name="education" class="form-control" placeholder="Your highest qualification" required>
       </div>
 
-      <!-- Resume upload -->
+      <!-- Resume upload (Optional) -->
       <div class="col-md-12">
-        <label class="form-label fw-bold">Resume (PDF or Image)</label>
+        <label class="form-label fw-bold">Resume (PDF or Image) - Optional</label>
         <input type="file" name="resume" id="resumeInput" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
       </div>
 
-      <!-- Experience textarea -->
-      <div class="col-md-12" id="experienceField" style="display:none;">
-        <label class="form-label fw-bold">Experience</label>
+      <!-- Experience textarea (Optional) -->
+      <div class="col-md-12">
+        <label class="form-label fw-bold">Experience - Optional</label>
         <textarea name="experience" class="form-control" rows="3" placeholder="Describe your work experience"></textarea>
       </div>
 
@@ -49,20 +56,21 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-  const resumeInput = document.getElementById('resumeInput');
-  const experienceField = document.getElementById('experienceField');
+  const form = document.getElementById('applyForm');
 
-  resumeInput.addEventListener('change', function() {
-    if (resumeInput.files.length === 0) {
-      experienceField.style.display = 'block';
-    } else {
-      experienceField.style.display = 'none';
-    }
-  });
+  // Validation for Phone & WhatsApp length
+  form.addEventListener('submit', function(e) {
+    const phone = form.phone.value.trim();
+    const whatsapp = form.whatsapp.value.trim();
 
-  document.addEventListener('DOMContentLoaded', () => {
-    if (!resumeInput.value) {
-      experienceField.style.display = 'block';
+    if (phone.length < 10 || whatsapp.length < 10) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Number',
+        text: 'Phone and WhatsApp numbers must be at least 10 digits long.',
+        confirmButtonColor: '#d33'
+      });
     }
   });
 
@@ -90,4 +98,5 @@
     <% } %>
   <% } %>
 </script>
+
 <%- include('partials/footer') %>
