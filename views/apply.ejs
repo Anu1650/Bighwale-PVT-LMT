@@ -1,0 +1,93 @@
+<%- include('partials/header') %>
+<div class="container py-5">
+  <div class="card shadow-lg p-4 animate__animated animate__fadeIn">
+    <h2 class="text-center text-primary mb-4">Apply for a Position</h2>
+    <form action="/apply" method="POST" enctype="multipart/form-data" class="row g-3" id="applyForm">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Full Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Email</label>
+        <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Phone</label>
+        <input type="text" name="phone" class="form-control" placeholder="Your phone number" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">WhatsApp</label>
+        <input type="text" name="whatsapp" class="form-control" placeholder="Your WhatsApp number" required>
+      </div>
+      <div class="col-md-12">
+        <label class="form-label fw-bold">Education</label>
+        <input type="text" name="education" class="form-control" placeholder="Your highest qualification" required>
+      </div>
+
+      <!-- Resume upload -->
+      <div class="col-md-12">
+        <label class="form-label fw-bold">Resume (PDF or Image)</label>
+        <input type="file" name="resume" id="resumeInput" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+
+      <!-- Experience textarea -->
+      <div class="col-md-12" id="experienceField" style="display:none;">
+        <label class="form-label fw-bold">Experience</label>
+        <textarea name="experience" class="form-control" rows="3" placeholder="Describe your work experience"></textarea>
+      </div>
+
+      <div class="col-12 text-center">
+        <button type="submit" class="btn btn-primary px-4 btn-lg">Submit Application</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Animate.css for smooth entry -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  const resumeInput = document.getElementById('resumeInput');
+  const experienceField = document.getElementById('experienceField');
+
+  resumeInput.addEventListener('change', function() {
+    if (resumeInput.files.length === 0) {
+      experienceField.style.display = 'block';
+    } else {
+      experienceField.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!resumeInput.value) {
+      experienceField.style.display = 'block';
+    }
+  });
+
+  // SweetAlert from server flash messages
+  <% if (typeof messages !== 'undefined') { %>
+    <% if (messages.error && messages.error.length > 0) { %>
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: '<%= messages.error[0] %>',
+        confirmButtonColor: '#d33'
+      });
+    <% } %>
+    <% if (messages.success && messages.success.length > 0) { %>
+      Swal.fire({
+        icon: 'success',
+        title: 'Application Submitted!',
+        text: '<%= messages.success[0] %>',
+        showConfirmButton: false,
+        timer: 2500,
+        didClose: () => {
+          window.location.href = "/";
+        }
+      });
+    <% } %>
+  <% } %>
+</script>
+<%- include('partials/footer') %>

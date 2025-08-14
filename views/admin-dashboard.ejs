@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bigwhale Recruitment - Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Bigwhale Admin</a>
+      <div class="d-flex">
+        <a href="/admin/logout" class="btn btn-outline-light">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <h2 class="mb-4">Applications</h2>
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search applicants...">
+
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>WhatsApp</th>
+            <th>Education</th>
+            <th>Experience</th>
+            <th>Resume</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="appTable">
+          <% applications.forEach(app => { %>
+            <tr>
+              <td><%= app.id %></td>
+              <td><%= app.name %></td>
+              <td><%= app.email %></td>
+              <td><%= app.phone %></td>
+              <td><%= app.whatsapp %></td>
+              <td><%= app.education %></td>
+              <td><%= app.experience ? app.experience : '<span class="text-muted">No Experience</span>' %></td>
+              <td>
+                <% if (app.resume) { %>
+                  <a href="<%= app.resume %>" target="_blank" class="btn btn-sm btn-outline-primary">View Resume</a>
+                <% } else { %>
+                  <span class="text-muted">No Resume</span>
+                <% } %>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="<%= app.id %>">Delete</button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Search filter
+    document.getElementById("searchInput").addEventListener("keyup", function() {
+      const filter = this.value.toLowerCase();
+      document.querySelectorAll("#appTable tr").forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(filter) ? "" : "none";
+      });
+    });
+
+    // SweetAlert delete confirmation
+    document.querySelectorAll(".delete-btn").forEach(button => {
+      button.addEventListener("click", function() {
+        const id = this.dataset.id;
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "This application will be permanently deleted.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = `/admin/delete/${id}`;
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

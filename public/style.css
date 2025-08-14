@@ -1,0 +1,8 @@
+.hero {
+  height: 80vh;
+  background: linear-gradient(rgba(0, 119, 204, 0.6), rgba(0, 119, 204, 0.6)),
+              url('/images/office-bg.jpg') center/cover no-repeat;
+}
+.hero h1, .hero p {
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+}
