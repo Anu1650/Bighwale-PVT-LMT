@@ -7,11 +7,14 @@ const session = require('express-session');
 const flash = require('connect-flash');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const DATA_FILE = path.join(__dirname, 'data', 'applications.json');
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 const config = JSON.parse(fs.readFileSync(CONFIG_FILE));
+
+const ADMIN_USER = process.env.ADMIN_USER || config.adminUsername;
+const ADMIN_PASS = process.env.ADMIN_PASS || config.adminPassword;
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -23,21 +26,20 @@ app.use(session({
     saveUninitialized: false
 }));
 app.use(flash());
-
 app.set('view engine', 'ejs');
 
-// Ensure JSON file exists
+// Ensure directories exist
 fs.ensureFileSync(DATA_FILE);
 if (!fs.readFileSync(DATA_FILE).toString()) {
     fs.writeFileSync(DATA_FILE, '[]');
 }
+fs.ensureDirSync(path.join(__dirname, 'public', 'uploads'));
 
 // Routes
 app.get('/', (req, res) => res.render('index', { messages: { error: req.flash('error'), success: req.flash('success') } }));
 app.get('/about', (req, res) => res.render('about'));
 app.get('/apply', (req, res) => res.render('apply', { messages: { error: req.flash('error'), success: req.flash('success') } }));
 
-// Apply form submission
 app.post('/apply', (req, res) => {
     const { name, email, phone, whatsapp, education, experience } = req.body;
     const resumeFile = req.files ? req.files.resume : null;
@@ -76,7 +78,7 @@ app.post('/apply', (req, res) => {
     const newEntry = {
         id: applications.length ? applications[applications.length - 1].id + 1 : 1,
         name, email, phone, whatsapp, education,
-        experience: experience || null,
+        experience: experience || "No Experience",
         resume: resumePath
     };
     applications.push(newEntry);
@@ -91,7 +93,7 @@ app.get('/admin/login', (req, res) => res.render('admin-login', { error: null })
 
 app.post('/admin/login', (req, res) => {
     const { username, password } = req.body;
-    if (username === config.adminUsername && password === config.adminPassword) {
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
         req.session.isAdmin = true;
         res.redirect('/admin/dashboard');
     } else {
@@ -120,4 +122,4 @@ app.get('/admin/logout', (req, res) => {
     req.session.destroy(() => res.redirect('/'));
 });
 
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
